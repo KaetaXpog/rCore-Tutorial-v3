@@ -9,7 +9,8 @@ use lazy_static::*;
 const USER_STACK_SIZE: usize = 4096 * 2;
 const KERNEL_STACK_SIZE: usize = 4096 * 2;
 const MAX_APP_NUM: usize = 16;
-const APP_BASE_ADDRESS: usize = 0x80400000;
+/// Address to load app into
+const APP_BASE_ADDRESS: usize = 0x80400000; 
 const APP_SIZE_LIMIT: usize = 0x20000;
 
 #[repr(align(4096))]
@@ -50,7 +51,9 @@ impl UserStack {
 
 struct AppManager {
     num_app: usize,
+    /// App to be loaded and executed
     current_app: usize,
+    /// App start address
     app_start: [usize; MAX_APP_NUM + 1],
 }
 
@@ -67,6 +70,7 @@ impl AppManager {
         }
     }
 
+    /// Load APP instructions from app to APP_BASE_ADDRESS
     unsafe fn load_app(&self, app_id: usize) {
         if app_id >= self.num_app {
             println!("All applications completed!");
@@ -94,6 +98,7 @@ impl AppManager {
         self.current_app
     }
 
+    /// set app_id to the next one
     pub fn move_to_next_app(&mut self) {
         self.current_app += 1;
     }

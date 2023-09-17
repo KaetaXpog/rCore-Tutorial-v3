@@ -66,6 +66,8 @@ pub fn rust_main() -> ! {
     clear_bss();
     logging::init();
     println!("[kernel] Hello, world!");
+
+    // TEST LOG LEVELS
     trace!(
         "[kernel] .text [{:#x}, {:#x})",
         stext as usize,
@@ -84,7 +86,9 @@ pub fn rust_main() -> ! {
         boot_stack_top as usize, boot_stack_lower_bound as usize
     );
     error!("[kernel] .bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
+
     trap::init();
+    
     batch::init();
     batch::run_next_app();
 }
