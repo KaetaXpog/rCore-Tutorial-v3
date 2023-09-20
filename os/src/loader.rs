@@ -53,7 +53,7 @@ fn get_base_i(app_id: usize) -> usize {
     APP_BASE_ADDRESS + app_id * APP_SIZE_LIMIT
 }
 
-/// Get the total number of applications.
+/// Get the total number of applications by symbol `_num_app`.
 pub fn get_num_app() -> usize {
     extern "C" {
         fn _num_app();
@@ -61,7 +61,7 @@ pub fn get_num_app() -> usize {
     unsafe { (_num_app as usize as *const usize).read_volatile() }
 }
 
-/// Load nth user app at
+/// Load nth user app to
 /// [APP_BASE_ADDRESS + n * APP_SIZE_LIMIT, APP_BASE_ADDRESS + (n+1) * APP_SIZE_LIMIT).
 pub fn load_apps() {
     extern "C" {
