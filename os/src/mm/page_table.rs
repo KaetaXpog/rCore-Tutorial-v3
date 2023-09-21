@@ -63,6 +63,7 @@ pub struct PageTable {
 
 /// Assume that it won't oom when creating/mapping.
 impl PageTable {
+    /// Allocate a frame for root page table
     pub fn new() -> Self {
         let frame = frame_alloc().unwrap();
         PageTable {
@@ -113,6 +114,8 @@ impl PageTable {
         }
         result
     }
+    
+    /// Add an entry in Page Table
     #[allow(unused)]
     pub fn map(&mut self, vpn: VirtPageNum, ppn: PhysPageNum, flags: PTEFlags) {
         let pte = self.find_pte_create(vpn).unwrap();
@@ -128,6 +131,7 @@ impl PageTable {
     pub fn translate(&self, vpn: VirtPageNum) -> Option<PageTableEntry> {
         self.find_pte(vpn).map(|pte| *pte)
     }
+    /// Return value which can be used to fill `satp` csr
     pub fn token(&self) -> usize {
         8usize << 60 | self.root_ppn.0
     }

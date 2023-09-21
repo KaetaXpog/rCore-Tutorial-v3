@@ -75,11 +75,12 @@ impl MemorySet {
             PTEFlags::R | PTEFlags::X,
         );
     }
-    /// Without kernel stacks.
+    /// Without kernel stacks. direct map kernel sections
     pub fn new_kernel() -> Self {
         let mut memory_set = Self::new_bare();
         // map trampoline
         memory_set.map_trampoline();
+
         // map kernel sections
         println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
         println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
@@ -230,6 +231,7 @@ impl MemorySet {
             elf.header.pt2.entry_point() as usize,
         )
     }
+    /// Set `satp` to enable virtual address
     pub fn activate(&self) {
         let satp = self.page_table.token();
         unsafe {
@@ -277,6 +279,7 @@ pub struct MapArea {
 }
 
 impl MapArea {
+    /// Create a MapArea definition
     pub fn new(
         start_va: VirtAddr,
         end_va: VirtAddr,
@@ -292,6 +295,8 @@ impl MapArea {
             map_perm,
         }
     }
+
+    /// add an page table entry for vpn. Allocate frame by self.map_type
     pub fn map_one(&mut self, page_table: &mut PageTable, vpn: VirtPageNum) {
         let ppn: PhysPageNum;
         match self.map_type {
@@ -307,6 +312,7 @@ impl MapArea {
         let pte_flags = PTEFlags::from_bits(self.map_perm.bits).unwrap();
         page_table.map(vpn, ppn, pte_flags);
     }
+
     #[allow(unused)]
     pub fn unmap_one(&mut self, page_table: &mut PageTable, vpn: VirtPageNum) {
         if self.map_type == MapType::Framed {
@@ -314,6 +320,8 @@ impl MapArea {
         }
         page_table.unmap(vpn);
     }
+    
+    /// Add a bunch of page table entry for self
     pub fn map(&mut self, page_table: &mut PageTable) {
         for vpn in self.vpn_range {
             self.map_one(page_table, vpn);
