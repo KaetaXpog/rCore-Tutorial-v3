@@ -55,6 +55,7 @@ impl StackFrameAllocator {
         self.end = r.0;
     }
 }
+
 impl FrameAllocator for StackFrameAllocator {
     fn new() -> Self {
         Self {
